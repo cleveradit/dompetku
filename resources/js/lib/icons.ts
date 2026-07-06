@@ -1,0 +1,108 @@
+/**
+ * Icon whitelist (05-DESIGN.md 2.3): ±40 lucide icons relevant to money and
+ * daily life. Wallet and category icons must come from this list; the backend
+ * validates against these names.
+ */
+import {
+    Baby,
+    Banknote,
+    Bike,
+    BookOpen,
+    Briefcase,
+    Building2,
+    Bus,
+    Car,
+    Coffee,
+    CreditCard,
+    Dumbbell,
+    Film,
+    Fuel,
+    Gamepad2,
+    Gift,
+    GraduationCap,
+    HandCoins,
+    Heart,
+    HeartPulse,
+    Home,
+    Landmark,
+    Laptop,
+    Music,
+    PawPrint,
+    PiggyBank,
+    Pill,
+    Plane,
+    Receipt,
+    Shirt,
+    ShoppingBag,
+    ShoppingCart,
+    Smartphone,
+    Sparkles,
+    TrendingUp,
+    Tv,
+    Utensils,
+    Wallet,
+    Wifi,
+    Wrench,
+    Zap,
+    type LucideIcon,
+} from 'lucide-react';
+
+export const ICONS: Record<string, LucideIcon> = {
+    baby: Baby,
+    banknote: Banknote,
+    bike: Bike,
+    'book-open': BookOpen,
+    briefcase: Briefcase,
+    'building-2': Building2,
+    bus: Bus,
+    car: Car,
+    coffee: Coffee,
+    'credit-card': CreditCard,
+    dumbbell: Dumbbell,
+    film: Film,
+    fuel: Fuel,
+    'gamepad-2': Gamepad2,
+    gift: Gift,
+    'graduation-cap': GraduationCap,
+    'hand-coins': HandCoins,
+    heart: Heart,
+    'heart-pulse': HeartPulse,
+    home: Home,
+    landmark: Landmark,
+    laptop: Laptop,
+    music: Music,
+    'paw-print': PawPrint,
+    'piggy-bank': PiggyBank,
+    pill: Pill,
+    plane: Plane,
+    receipt: Receipt,
+    shirt: Shirt,
+    'shopping-bag': ShoppingBag,
+    'shopping-cart': ShoppingCart,
+    smartphone: Smartphone,
+    sparkles: Sparkles,
+    'trending-up': TrendingUp,
+    tv: Tv,
+    utensils: Utensils,
+    wallet: Wallet,
+    wifi: Wifi,
+    wrench: Wrench,
+    zap: Zap,
+};
+
+export const ICON_NAMES = Object.keys(ICONS);
+
+export function iconByName(name: string | null | undefined, fallback: LucideIcon = Wallet): LucideIcon {
+    return (name && ICONS[name]) || fallback;
+}
+
+/** Palet pecahan rupiah (05-DESIGN.md 2.3), urut nominal terbesar. */
+export const RUPIAH_PALETTE = [
+    { name: 'Merah Seratus', hex: '#B94A48' },
+    { name: 'Biru Lima Puluh', hex: '#3E5BAA' },
+    { name: 'Hijau Dua Puluh', hex: '#2E7D5B' },
+    { name: 'Ungu Sepuluh', hex: '#6D5BA8' },
+    { name: 'Cokelat Lima', hex: '#8A5A3B' },
+    { name: 'Abu Dua', hex: '#6B7280' },
+    { name: 'Kuning Seribu', hex: '#A08C3B' },
+] as const;

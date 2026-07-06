@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - app
+        - app-modules/identity/src
+        - app-modules/wallet/src
+        - app-modules/ledger/src
+        - app-modules/budget/src
+        - app-modules/reporting/src
+        - app-modules/shared/src
