@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useCurrency } from '@/hooks/use-currency';
-import { maskAmountInput, parseAmountInput } from '@/lib/money';
+import { formatAmountForInput, maskAmountInput, parseAmountInput } from '@/lib/money';
 import { cn } from '@/lib/utils';
 
 interface AmountInputProps {
@@ -19,7 +19,7 @@ interface AmountInputProps {
 /** 04-NFR.md U-5: masking ribuan dan koma desimal; nilai dikirim sebagai string. */
 export default function AmountInput({ value, onChange, id, autoFocus, size = 'md', placeholder = '0', disabled }: AmountInputProps) {
     const currency = useCurrency();
-    const [display, setDisplay] = useState(() => (value ? maskAmountInput(value.replace('.', ','), currency) : ''));
+    const [display, setDisplay] = useState(() => (value ? formatAmountForInput(value, currency) : ''));
 
     useEffect(() => {
         if (value === '') {
@@ -28,7 +28,7 @@ export default function AmountInput({ value, onChange, id, autoFocus, size = 'md
         }
         const parsed = parseAmountInput(display, currency);
         if (parsed !== value) {
-            setDisplay(maskAmountInput(value.replace('.', ','), currency));
+            setDisplay(formatAmountForInput(value, currency));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [value]);

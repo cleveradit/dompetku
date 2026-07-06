@@ -44,18 +44,20 @@ test('alur inti Dompetku dari registrasi sampai laporan', async ({ page }, testI
         await page.getByLabel('Catat transaksi').click();
     }
     await expect(page.getByRole('heading', { name: 'Catat transaksi' })).toBeVisible();
-    await page.locator('#tx-amount').fill('25000');
+    // Ketik digit satu per satu (mensimulasikan user asli) agar regresi masking ribuan terdeteksi.
+    await page.locator('#tx-amount').pressSequentially('250000');
+    await expect(page.locator('#tx-amount')).toHaveValue('250.000');
     await page.getByRole('button', { name: 'Makan & Minum' }).click();
     await page.getByRole('button', { name: 'Simpan' }).click();
 
     // Toast sukses + saldo terpotong
     await expect(page.getByText('Transaksi tersimpan')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText('Rp975.000').first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('Rp750.000').first()).toBeVisible({ timeout: 15_000 });
 
     // 6. Laporan menampilkan pengeluaran
     await page.goto('/reports');
     await expect(page.getByText('Keluar', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('Rp25.000').first()).toBeVisible();
+    await expect(page.getByText('Rp250.000').first()).toBeVisible();
 
     // Tidak ada horizontal scroll (04-NFR.md U-1)
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

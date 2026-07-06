@@ -132,6 +132,9 @@ export function maskAmountInput(raw: string, currency: string): string {
             } else {
                 digitsOnly += ch;
             }
+        } else if (ch === sep.group) {
+            // Thousands separator produced by a previous mask pass; ignore it.
+            continue;
         } else if ((ch === sep.decimal || ch === '.' || ch === ',') && !seenDecimal) {
             seenDecimal = true;
         }
@@ -142,6 +145,21 @@ export function maskAmountInput(raw: string, currency: string): string {
 
     const grouped = groupDigits(digitsOnly, sep.group);
     return seenDecimal ? grouped + sep.decimal + decimal : grouped;
+}
+
+/**
+ * Format a canonical decimal string ("1250000.5") for display inside the
+ * masked input, honouring the currency's own group/decimal separators. Unlike
+ * maskAmountInput, this splits on '.' structurally (it is always the
+ * canonical decimal point) rather than guessing from characters, so it never
+ * misreads a currency's own separators (e.g. group=',' for USD/SGD/MYR).
+ */
+export function formatAmountForInput(canonical: string, currency: string): string {
+    const sep = separators(config(currency).locale);
+    const [intPart = '', fracPart = ''] = canonical.split('.');
+    const digitsOnly = intPart.replace(/^0+(?=\d)/, '');
+    const grouped = groupDigits(digitsOnly, sep.group);
+    return fracPart ? grouped + sep.decimal + fracPart : grouped;
 }
 
 /** Compare two decimal strings without floats: -1, 0 or 1. */
