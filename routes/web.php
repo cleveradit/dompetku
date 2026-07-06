@@ -20,6 +20,9 @@ Route::get('/', fn () => redirect()->route('dashboard'))->name('home');
 
 Route::get('/sampai-jumpa', fn () => Inertia::render('goodbye'))->name('goodbye');
 
+// US-23: halaman offline yang ditampilkan service worker saat navigasi gagal.
+Route::get('/offline', fn () => Inertia::render('offline'))->name('offline');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Onboarding dompet pertama (di luar guard has.wallet).
     Route::get('wallets/first', [WalletController::class, 'first'])->name('wallets.first');

@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Reporting\Application\Queries\BalanceTrendQuery;
 use Modules\Reporting\Application\Queries\SpendingByCategoryQuery;
 use Modules\Reporting\Application\Queries\SpendingByPeriodQuery;
 use Modules\Reporting\Application\Queries\SpendingByWalletQuery;
@@ -25,6 +26,7 @@ class ReportController extends Controller
         SpendingByCategoryQuery $spendingByCategory,
         SpendingByWalletQuery $spendingByWallet,
         WalletOptionsQuery $walletOptions,
+        BalanceTrendQuery $balanceTrendQuery,
     ): Response {
         $validated = $request->validate([
             'interval' => ['nullable', 'in:daily,weekly,monthly,yearly,custom'],
@@ -74,6 +76,7 @@ class ReportController extends Controller
             'categories' => $spendingByCategory->handle($userId, $period, 'expense', $walletId),
             'incomeCategories' => $spendingByCategory->handle($userId, $period, 'income', $walletId),
             'walletBreakdown' => $spendingByWallet->handle($userId, $period),
+            'balanceTrend' => $balanceTrendQuery->handle($userId, $period),
         ]);
     }
 

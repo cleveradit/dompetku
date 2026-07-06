@@ -27,3 +27,10 @@ createInertiaApp({
 
 // This will set light / dark mode on load...
 initializeTheme();
+
+// US-23: registrasi service worker minimal (installable PWA).
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+    });
+}

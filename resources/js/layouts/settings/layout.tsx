@@ -10,6 +10,7 @@ const NAV_ITEMS = [
     { title: 'Tampilan', url: '/settings/appearance' },
     { title: 'Kategori', url: '/categories' },
     { title: 'Transaksi berulang', url: '/recurring' },
+    { title: 'Data', url: '/settings/data' },
     { title: 'Akun', url: '/settings/account' },
 ];
 

@@ -25,6 +25,34 @@ services:
             - mysql
             - redis
             - mailpit
+    # Worker antrean: export besar & email (01-ARCHITECTURE.md: queue via Redis).
+    queue:
+        image: sail-8.3/app
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            SUPERVISOR_PHP_COMMAND: 'php /var/www/html/artisan queue:work redis --sleep=1 --tries=3 --timeout=300'
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - mysql
+            - redis
+    # Scheduler: menjalankan recurring:run harian (schedule:work di Sail).
+    scheduler:
+        image: sail-8.3/app
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            SUPERVISOR_PHP_COMMAND: 'php /var/www/html/artisan schedule:work'
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - mysql
+            - redis
     mysql:
         image: 'mysql:8.4'
         ports:

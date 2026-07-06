@@ -1,7 +1,7 @@
 import { Head, Link, router } from '@inertiajs/react';
 import { ChartPie, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import AmountText from '@/components/domain/amount-text';
 import EmptyState from '@/components/domain/empty-state';
@@ -33,6 +33,11 @@ interface WalletBreakdown {
     income: string;
 }
 
+interface BalanceTrendPoint {
+    date: string;
+    balance: string;
+}
+
 interface ReportsProps {
     interval: string;
     period: { start: string; end: string; label: string };
@@ -44,6 +49,7 @@ interface ReportsProps {
     categories: CategoryBreakdown[];
     incomeCategories: CategoryBreakdown[];
     walletBreakdown: WalletBreakdown[];
+    balanceTrend: BalanceTrendPoint[];
 }
 
 const INTERVALS = [
@@ -54,9 +60,17 @@ const INTERVALS = [
     { value: 'custom', label: 'Custom' },
 ];
 
+const MAIN_TABS = [
+    { value: 'summary', label: 'Ringkasan' },
+    { value: 'trend', label: 'Tren saldo' },
+] as const;
+
+type MainTab = (typeof MAIN_TABS)[number]['value'];
+
 export default function ReportsIndex(props: ReportsProps) {
-    const { interval, period, navigation, walletId, wallets, totals, trend, categories, incomeCategories, walletBreakdown } = props;
+    const { interval, period, navigation, walletId, wallets, totals, trend, categories, incomeCategories, walletBreakdown, balanceTrend } = props;
     const currency = useCurrency();
+    const [mainTab, setMainTab] = useState<MainTab>('summary');
     const [breakdownTab, setBreakdownTab] = useState<'expense' | 'income'>('expense');
     const [customStart, setCustomStart] = useState(period.start);
     const [customEnd, setCustomEnd] = useState(period.end);
@@ -75,11 +89,34 @@ export default function ReportsIndex(props: ReportsProps) {
         raw: point.expense,
     }));
 
+    const balanceTrendData = balanceTrend.map((point) => ({
+        date: point.date,
+        label: point.date.slice(5),
+        value: Number(point.balance),
+        raw: point.balance,
+    }));
+
     return (
         <AppLayout title="Laporan">
             <Head title="Laporan" />
 
             <div className="flex flex-col gap-4 pt-2 pb-6">
+                {/* Tab utama */}
+                <div className="bg-secondary flex gap-1 rounded-lg p-1">
+                    {MAIN_TABS.map((item) => (
+                        <button
+                            key={item.value}
+                            onClick={() => setMainTab(item.value)}
+                            className={cn(
+                                'min-h-9 flex-1 rounded-md px-3 text-sm font-medium transition-colors',
+                                mainTab === item.value ? 'bg-card text-foreground shadow-xs' : 'text-muted-foreground',
+                            )}
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+
                 {/* Pemilih interval */}
                 <div className="bg-secondary flex gap-1 overflow-x-auto rounded-lg p-1">
                     {INTERVALS.map((item) => (
@@ -131,49 +168,87 @@ export default function ReportsIndex(props: ReportsProps) {
                     </div>
                 )}
 
-                {/* Filter dompet */}
-                <Select
-                    value={walletId !== null ? String(walletId) : 'all'}
-                    onValueChange={(value) =>
-                        visit({
-                            wallet: value === 'all' ? undefined : Number(value),
-                            anchor: interval === 'custom' ? undefined : period.start,
-                            start: interval === 'custom' ? period.start : undefined,
-                            end: interval === 'custom' ? period.end : undefined,
-                        })
-                    }
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Semua dompet" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">Semua dompet</SelectItem>
-                        {wallets.map((wallet) => (
-                            <SelectItem key={wallet.id} value={String(wallet.id)}>
-                                {wallet.name}
-                                {wallet.is_archived ? ' (diarsipkan)' : ''}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                {mainTab === 'summary' && (
+                    <>
+                        {/* Filter dompet */}
+                        <Select
+                            value={walletId !== null ? String(walletId) : 'all'}
+                            onValueChange={(value) =>
+                                visit({
+                                    wallet: value === 'all' ? undefined : Number(value),
+                                    anchor: interval === 'custom' ? undefined : period.start,
+                                    start: interval === 'custom' ? period.start : undefined,
+                                    end: interval === 'custom' ? period.end : undefined,
+                                })
+                            }
+                        >
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Semua dompet" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Semua dompet</SelectItem>
+                                {wallets.map((wallet) => (
+                                    <SelectItem key={wallet.id} value={String(wallet.id)}>
+                                        {wallet.name}
+                                        {wallet.is_archived ? ' (diarsipkan)' : ''}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
 
-                {/* Tiga angka ringkas */}
-                <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-card border-border rounded-xl border p-3">
-                        <p className="text-muted-foreground text-xs">Masuk</p>
-                        <AmountText amount={totals.income} variant="income" className="text-sm sm:text-[15px]" />
-                    </div>
-                    <div className="bg-card border-border rounded-xl border p-3">
-                        <p className="text-muted-foreground text-xs">Keluar</p>
-                        <AmountText amount={totals.expense} variant="expense" className="text-sm sm:text-[15px]" />
-                    </div>
-                    <div className="bg-card border-border rounded-xl border p-3">
-                        <p className="text-muted-foreground text-xs">Selisih</p>
-                        <AmountText amount={totals.net} variant="balance" className="text-sm sm:text-[15px]" />
-                    </div>
-                </div>
+                        {/* Tiga angka ringkas */}
+                        <div className="grid grid-cols-3 gap-3">
+                            <div className="bg-card border-border rounded-xl border p-3">
+                                <p className="text-muted-foreground text-xs">Masuk</p>
+                                <AmountText amount={totals.income} variant="income" className="text-sm sm:text-[15px]" />
+                            </div>
+                            <div className="bg-card border-border rounded-xl border p-3">
+                                <p className="text-muted-foreground text-xs">Keluar</p>
+                                <AmountText amount={totals.expense} variant="expense" className="text-sm sm:text-[15px]" />
+                            </div>
+                            <div className="bg-card border-border rounded-xl border p-3">
+                                <p className="text-muted-foreground text-xs">Selisih</p>
+                                <AmountText amount={totals.net} variant="balance" className="text-sm sm:text-[15px]" />
+                            </div>
+                        </div>
+                    </>
+                )}
 
-                {isEmpty ? (
+                {mainTab === 'trend' && (
+                    <section className="bg-card border-border rounded-xl border p-4">
+                        <h2 className="pb-3 text-sm font-semibold">Tren saldo per hari</h2>
+                        <div className="h-56">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={balanceTrendData} margin={{ top: 4, right: 4, bottom: 0, left: 4 }}>
+                                    <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
+                                    <XAxis
+                                        dataKey="label"
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tick={{ fontSize: 10, fill: 'var(--muted-foreground)' }}
+                                        interval="preserveStartEnd"
+                                    />
+                                    <YAxis hide domain={['auto', 'auto']} />
+                                    <Tooltip
+                                        cursor={{ stroke: 'var(--border)' }}
+                                        content={({ active, payload }) =>
+                                            active && payload?.[0] ? (
+                                                <div className="bg-popover border-border rounded-lg border px-3 py-2 text-xs shadow-md">
+                                                    <span className="font-money font-semibold">
+                                                        {formatMoney(String(payload[0].payload.raw), currency)}
+                                                    </span>
+                                                </div>
+                                            ) : null
+                                        }
+                                    />
+                                    <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2} dot={false} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </section>
+                )}
+
+                {mainTab === 'summary' && (isEmpty ? (
                     <EmptyState
                         icon={ChartPie}
                         message="Belum ada transaksi pada periode ini."
@@ -319,7 +394,7 @@ export default function ReportsIndex(props: ReportsProps) {
                             </section>
                         )}
                     </>
-                )}
+                ))}
             </div>
         </AppLayout>
     );
