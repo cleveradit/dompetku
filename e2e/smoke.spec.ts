@@ -47,17 +47,22 @@ test('alur inti Dompetku dari registrasi sampai laporan', async ({ page }, testI
     // Ketik digit satu per satu (mensimulasikan user asli) agar regresi masking ribuan terdeteksi.
     await page.locator('#tx-amount').pressSequentially('250000');
     await expect(page.locator('#tx-amount')).toHaveValue('250.000');
+    // Koma desimal (04-NFR.md U-5): koma menggantung tidak boleh menghapus isian.
+    await page.locator('#tx-amount').pressSequentially(',');
+    await expect(page.locator('#tx-amount')).toHaveValue('250.000,');
+    await page.locator('#tx-amount').pressSequentially('75');
+    await expect(page.locator('#tx-amount')).toHaveValue('250.000,75');
     await page.getByRole('button', { name: 'Makan & Minum' }).click();
     await page.getByRole('button', { name: 'Simpan' }).click();
 
-    // Toast sukses + saldo terpotong
+    // Toast sukses + saldo terpotong; sen ikut tampil (05-DESIGN.md 2.4)
     await expect(page.getByText('Transaksi tersimpan')).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText('Rp750.000').first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText('Rp749.999,25').first()).toBeVisible({ timeout: 15_000 });
 
     // 6. Laporan menampilkan pengeluaran
     await page.goto('/reports');
     await expect(page.getByText('Keluar', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('Rp250.000').first()).toBeVisible();
+    await expect(page.getByText('Rp250.000,75').first()).toBeVisible();
 
     // Tidak ada horizontal scroll (04-NFR.md U-1)
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);

@@ -108,14 +108,17 @@ function compactValue(int: string, cut: number): string {
 /**
  * Parse masked user input ("1.250.000,50" in id-ID) into the canonical wire
  * string "1250000.50". Returns null when the input is not a valid amount.
+ * A trailing decimal separator ("50.000,") is an in-progress keystroke and
+ * parses as the integer part, so the field is not wiped mid-typing.
  */
 export function parseAmountInput(masked: string, currency: string): string | null {
     const sep = separators(config(currency).locale);
     const cleaned = masked.trim().split(sep.group).join('').replace(sep.decimal, '.');
-    if (!/^\d+(\.\d{1,2})?$/.test(cleaned)) {
+    const normalized = cleaned.endsWith('.') ? cleaned.slice(0, -1) : cleaned;
+    if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
         return null;
     }
-    return cleaned;
+    return normalized;
 }
 
 /** Re-mask a raw typing buffer for display: digits + at most one decimal separator. */
