@@ -8,12 +8,15 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Http\Responses\IndistinguishablePasswordResetLinkResponse;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use Laravel\Fortify\Contracts\FailedPasswordResetLinkRequestResponse;
+use Laravel\Fortify\Contracts\SuccessfulPasswordResetLinkRequestResponse;
 use Laravel\Fortify\Fortify;
 use Modules\Shared\Support\Currencies;
 
@@ -23,12 +26,12 @@ class FortifyServiceProvider extends ServiceProvider
     {
         // 04-NFR.md S-9: anti user-enumeration pada lupa password.
         $this->app->singleton(
-            \Laravel\Fortify\Contracts\SuccessfulPasswordResetLinkRequestResponse::class,
-            \App\Http\Responses\IndistinguishablePasswordResetLinkResponse::class,
+            SuccessfulPasswordResetLinkRequestResponse::class,
+            IndistinguishablePasswordResetLinkResponse::class,
         );
         $this->app->singleton(
-            \Laravel\Fortify\Contracts\FailedPasswordResetLinkRequestResponse::class,
-            \App\Http\Responses\IndistinguishablePasswordResetLinkResponse::class,
+            FailedPasswordResetLinkRequestResponse::class,
+            IndistinguishablePasswordResetLinkResponse::class,
         );
     }
 

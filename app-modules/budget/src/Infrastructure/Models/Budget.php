@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Budget\Infrastructure\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Budget\Database\Factories\BudgetFactory;
@@ -13,7 +14,7 @@ use Modules\Shared\Concerns\OwnedByUser;
  * @property int $id
  * @property int $user_id
  * @property int $category_id
- * @property \Carbon\CarbonImmutable $month
+ * @property CarbonImmutable $month
  * @property string $amount
  */
 class Budget extends Model

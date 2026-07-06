@@ -10,7 +10,5 @@ class TransactionRecorded
 {
     use Dispatchable;
 
-    public function __construct(public int $transactionId, public int $userId)
-    {
-    }
+    public function __construct(public int $transactionId, public int $userId) {}
 }

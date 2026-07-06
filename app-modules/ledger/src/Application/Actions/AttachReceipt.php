@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Ledger\Application\Actions;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Modules\Ledger\Domain\Exceptions\AttachmentLimitReached;
 use Modules\Ledger\Infrastructure\Models\Attachment;
 use Modules\Ledger\Infrastructure\Models\Transaction;

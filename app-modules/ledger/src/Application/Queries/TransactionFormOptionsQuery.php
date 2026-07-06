@@ -14,9 +14,7 @@ use Modules\Wallet\Application\Queries\WalletOptionsQuery;
  */
 class TransactionFormOptionsQuery
 {
-    public function __construct(private readonly WalletOptionsQuery $walletOptions)
-    {
-    }
+    public function __construct(private readonly WalletOptionsQuery $walletOptions) {}
 
     /** @return array<string, mixed> */
     public function handle(int $userId): array

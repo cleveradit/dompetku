@@ -6,6 +6,8 @@ namespace Modules\Ledger\Application\Queries;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Modules\Ledger\Infrastructure\Models\Attachment;
 use Modules\Ledger\Infrastructure\Models\Transaction;
 use Modules\Wallet\Application\Queries\WalletOptionsQuery;
 
@@ -17,9 +19,7 @@ class TransactionIndexQuery
 {
     public const PER_PAGE = 25;
 
-    public function __construct(private readonly WalletOptionsQuery $walletOptions)
-    {
-    }
+    public function __construct(private readonly WalletOptionsQuery $walletOptions) {}
 
     /** @return array<string, mixed> */
     public function handle(Request $request): array
@@ -27,7 +27,7 @@ class TransactionIndexQuery
         $userId = (int) $request->user()->id;
         $filters = $this->filters($request);
 
-        $base = $this->applyFilters(Transaction::query()->with('category'), $filters);
+        $base = $this->applyFilters(Transaction::query()->with(['category', 'attachments']), $filters);
 
         $paginator = (clone $base)
             ->orderByDesc('occurred_on')
@@ -61,6 +61,12 @@ class TransactionIndexQuery
                 'destination_wallet_id' => $transaction->destination_wallet_id,
                 'category_id' => $transaction->category_id,
                 'is_recurring' => $transaction->recurring_transaction_id !== null,
+                'attachments' => $transaction->attachments->map(fn (Attachment $attachment): array => [
+                    'id' => $attachment->id,
+                    'original_name' => $attachment->original_name,
+                    'mime_type' => $attachment->mime_type,
+                    'url' => route('attachments.show', $attachment->id),
+                ])->values()->all(),
             ];
         });
 
@@ -86,7 +92,20 @@ class TransactionIndexQuery
             ],
             'filters' => $filters,
             'summary' => $summary,
+            'exportReady' => $this->exportReady($userId),
         ];
+    }
+
+    /** @return array{url: string, name: string}|null */
+    private function exportReady(int $userId): ?array
+    {
+        $entry = Cache::get("transactions-export:{$userId}");
+
+        if (($entry['status'] ?? null) !== 'ready') {
+            return null;
+        }
+
+        return ['url' => route('exports.download'), 'name' => $entry['name']];
     }
 
     /** @return array<string, mixed> */

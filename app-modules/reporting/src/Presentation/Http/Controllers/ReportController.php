@@ -7,6 +7,7 @@ namespace Modules\Reporting\Presentation\Http\Controllers;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Modules\Reporting\Application\Queries\SpendingByCategoryQuery;
@@ -41,7 +42,7 @@ class ReportController extends Controller
             $end = CarbonImmutable::parse($validated['end'], 'Asia/Jakarta');
 
             if ($start->diffInDays($end) > 366) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
+                throw ValidationException::withMessages([
                     'end' => 'Rentang custom maksimal 366 hari.',
                 ]);
             }

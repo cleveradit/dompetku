@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Ledger\Infrastructure\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,9 +24,9 @@ use Modules\Shared\Concerns\OwnedByUser;
  * @property string|null $description
  * @property RecurringFrequency $frequency
  * @property int $interval
- * @property \Carbon\CarbonImmutable $next_run_on
- * @property \Carbon\CarbonImmutable|null $end_on
- * @property \Carbon\CarbonImmutable|null $last_run_on
+ * @property CarbonImmutable $next_run_on
+ * @property CarbonImmutable|null $end_on
+ * @property CarbonImmutable|null $last_run_on
  * @property bool $is_active
  */
 class RecurringTransaction extends Model

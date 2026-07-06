@@ -5,34 +5,33 @@ declare(strict_types=1);
 namespace Modules\Reporting\Application\Exports;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
+use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Modules\Ledger\Application\Queries\TransactionIndexQuery;
+use Modules\Ledger\Domain\Enums\TransactionType;
 use Modules\Ledger\Infrastructure\Models\Transaction;
 
 /**
  * US-19: kolom tanggal, tipe, kategori, dompet, dompet tujuan, nominal,
  * catatan; nominal 2 desimal tanpa pembulatan salah (AC-19.3). Berjalan juga
  * di queue tanpa auth — scope user eksplisit.
+ *
+ * @implements WithMapping<Transaction>
  */
 class TransactionsExport implements FromQuery, ShouldQueue, WithHeadings, WithMapping
 {
-    use \Maatwebsite\Excel\Concerns\Exportable;
-
-    private const TYPE_LABELS = [
-        'income' => 'Pemasukan',
-        'expense' => 'Pengeluaran',
-        'transfer' => 'Transfer',
-    ];
+    use Exportable;
 
     /** @param  array<string, mixed>  $filters */
     public function __construct(
         private readonly int $userId,
         private readonly array $filters,
-    ) {
-    }
+    ) {}
 
+    /** @return Builder<Transaction> */
     public function query()
     {
         $base = Transaction::withoutGlobalScope('ownedByUser')
@@ -66,7 +65,11 @@ class TransactionsExport implements FromQuery, ShouldQueue, WithHeadings, WithMa
     {
         return [
             $row->occurred_on->toDateString(),
-            self::TYPE_LABELS[$row->type->value] ?? $row->type->value,
+            match ($row->type) {
+                TransactionType::Income => 'Pemasukan',
+                TransactionType::Expense => 'Pengeluaran',
+                TransactionType::Transfer => 'Transfer',
+            },
             $row->getAttribute('category_name'),
             $row->getAttribute('wallet_name'),
             $row->getAttribute('destination_wallet_name'),

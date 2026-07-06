@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Identity\Infrastructure\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,12 +15,12 @@ use Modules\Identity\Database\Factories\UserFactory;
  * @property int $id
  * @property string $name
  * @property string $email
- * @property \Carbon\CarbonImmutable|null $email_verified_at
+ * @property CarbonImmutable|null $email_verified_at
  * @property string $password
  * @property string $currency
  * @property string|null $remember_token
- * @property \Carbon\CarbonImmutable|null $created_at
- * @property \Carbon\CarbonImmutable|null $updated_at
+ * @property CarbonImmutable|null $created_at
+ * @property CarbonImmutable|null $updated_at
  */
 class User extends Authenticatable implements MustVerifyEmail
 {

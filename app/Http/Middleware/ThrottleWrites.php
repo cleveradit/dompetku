@@ -18,9 +18,7 @@ class ThrottleWrites
 {
     private const AUTH_PATHS = ['register', 'forgot-password'];
 
-    public function __construct(private readonly RateLimiter $limiter)
-    {
-    }
+    public function __construct(private readonly RateLimiter $limiter) {}
 
     public function handle(Request $request, Closure $next): Response
     {

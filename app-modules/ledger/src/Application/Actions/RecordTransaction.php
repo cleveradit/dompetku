@@ -13,9 +13,7 @@ use Modules\Wallet\Application\Actions\AdjustWalletBalance;
 
 class RecordTransaction
 {
-    public function __construct(private readonly AdjustWalletBalance $adjustWalletBalance)
-    {
-    }
+    public function __construct(private readonly AdjustWalletBalance $adjustWalletBalance) {}
 
     /**
      * Catat income/expense/transfer. Semua invariant I-1..I-5 sudah divalidasi

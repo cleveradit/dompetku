@@ -16,9 +16,7 @@ class CreateNewUser implements CreatesNewUsers
 {
     use PasswordValidationRules;
 
-    public function __construct(private readonly RegisterUser $registerUser)
-    {
-    }
+    public function __construct(private readonly RegisterUser $registerUser) {}
 
     /**
      * Validate and create a newly registered user (US-01).

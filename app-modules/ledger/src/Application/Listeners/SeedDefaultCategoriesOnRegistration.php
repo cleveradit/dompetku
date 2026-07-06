@@ -9,9 +9,7 @@ use Modules\Ledger\Application\Actions\SeedDefaultCategories;
 
 class SeedDefaultCategoriesOnRegistration
 {
-    public function __construct(private readonly SeedDefaultCategories $seedDefaultCategories)
-    {
-    }
+    public function __construct(private readonly SeedDefaultCategories $seedDefaultCategories) {}
 
     public function handle(UserRegistered $event): void
     {

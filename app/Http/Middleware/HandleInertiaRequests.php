@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Modules\Ledger\Application\Queries\TransactionFormOptionsQuery;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -31,7 +32,7 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             // Data form transaksi global (FAB, 05-DESIGN.md 4.5) untuk user terverifikasi.
             'transactionForm' => $user !== null && $user->hasVerifiedEmail()
-                ? fn () => app(\Modules\Ledger\Application\Queries\TransactionFormOptionsQuery::class)->handle($user->id)
+                ? fn () => app(TransactionFormOptionsQuery::class)->handle($user->id)
                 : null,
             'name' => config('app.name'),
             'auth' => [

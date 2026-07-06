@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
 use Modules\Identity\Infrastructure\Models\User;
+use Modules\Ledger\Infrastructure\Models\Category;
 use Modules\Wallet\Infrastructure\Models\Wallet;
 
 function walletPayload(array $overrides = []): array
@@ -141,7 +142,7 @@ it('soft deletes a wallet without transactions or recurring', function () {
 it('refuses to delete a wallet that has transactions', function () {
     $user = User::factory()->create();
     $wallet = Wallet::factory()->forUser($user)->create();
-    $category = \Modules\Ledger\Infrastructure\Models\Category::factory()->forUser($user)->create();
+    $category = Category::factory()->forUser($user)->create();
 
     DB::table('transactions')->insert([
         'user_id' => $user->id,
@@ -189,7 +190,7 @@ it('refuses to delete a wallet that is a transfer destination', function () {
 it('refuses to delete a wallet with an active recurring transaction', function () {
     $user = User::factory()->create();
     $wallet = Wallet::factory()->forUser($user)->create();
-    $category = \Modules\Ledger\Infrastructure\Models\Category::factory()->forUser($user)->create();
+    $category = Category::factory()->forUser($user)->create();
 
     DB::table('recurring_transactions')->insert([
         'user_id' => $user->id,

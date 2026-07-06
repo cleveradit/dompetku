@@ -1,4 +1,3 @@
-// Components
 import { Head, useForm } from '@inertiajs/react';
 import { LoaderCircle } from 'lucide-react';
 import { FormEventHandler } from 'react';
@@ -17,17 +16,14 @@ export default function ConfirmPassword() {
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
 
-        post(route('password.confirm'), {
+        post(route('password.confirm.store'), {
             onFinish: () => reset('password'),
         });
     };
 
     return (
-        <AuthLayout
-            title="Confirm your password"
-            description="This is a secure area of the application. Please confirm your password before continuing."
-        >
-            <Head title="Confirm password" />
+        <AuthLayout title="Konfirmasi password" description="Demi keamanan, masukkan passwordmu sekali lagi sebelum melanjutkan.">
+            <Head title="Konfirmasi password" />
 
             <form onSubmit={submit}>
                 <div className="space-y-6">
@@ -50,7 +46,7 @@ export default function ConfirmPassword() {
                     <div className="flex items-center">
                         <Button className="w-full" disabled={processing}>
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Confirm password
+                            Konfirmasi password
                         </Button>
                     </div>
                 </div>

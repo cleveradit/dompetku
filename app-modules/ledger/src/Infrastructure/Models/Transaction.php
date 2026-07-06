@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Ledger\Infrastructure\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,7 +24,7 @@ use Modules\Shared\Concerns\OwnedByUser;
  * @property TransactionType $type
  * @property string $amount
  * @property string|null $description
- * @property \Carbon\CarbonImmutable $occurred_on
+ * @property CarbonImmutable $occurred_on
  */
 class Transaction extends Model
 {

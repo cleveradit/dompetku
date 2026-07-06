@@ -6,6 +6,7 @@ namespace Modules\Reporting\Application\Queries;
 
 use Brick\Math\BigDecimal;
 use Brick\Math\RoundingMode;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -18,7 +19,7 @@ class BudgetProgressQuery
     /** @return list<array<string, mixed>> */
     public function handle(int $userId, string $month): array
     {
-        $monthStart = \Carbon\CarbonImmutable::parse($month)->startOfMonth();
+        $monthStart = CarbonImmutable::parse($month)->startOfMonth();
         $monthEnd = $monthStart->endOfMonth();
 
         $rows = DB::table('budgets')

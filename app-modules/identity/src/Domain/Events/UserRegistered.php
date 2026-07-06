@@ -10,7 +10,5 @@ class UserRegistered
 {
     use Dispatchable;
 
-    public function __construct(public int $userId)
-    {
-    }
+    public function __construct(public int $userId) {}
 }

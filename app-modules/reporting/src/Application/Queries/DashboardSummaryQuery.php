@@ -19,8 +19,7 @@ class DashboardSummaryQuery
         private readonly WalletOptionsQuery $walletOptions,
         private readonly SpendingByPeriodQuery $spendingByPeriod,
         private readonly BudgetProgressQuery $budgetProgress,
-    ) {
-    }
+    ) {}
 
     /** @return array<string, mixed> */
     public function handle(int $userId): array

@@ -14,9 +14,7 @@ use Modules\Shared\Support\Currencies;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
-    public function __construct(private readonly UpdateProfile $updateProfile)
-    {
-    }
+    public function __construct(private readonly UpdateProfile $updateProfile) {}
 
     /**
      * Update profil: nama, email, mata uang tampilan (US-12).

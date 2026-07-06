@@ -14,9 +14,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
 {
     use PasswordValidationRules;
 
-    public function __construct(private readonly ChangePassword $changePassword)
-    {
-    }
+    public function __construct(private readonly ChangePassword $changePassword) {}
 
     /**
      * Ganti password: wajib password lama (US-04).

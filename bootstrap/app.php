@@ -10,6 +10,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Session\Middleware\AuthenticateSession;
+use Modules\Wallet\Presentation\Http\Middleware\EnsureHasWallet;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'has.wallet' => \Modules\Wallet\Presentation\Http\Middleware\EnsureHasWallet::class,
+            'has.wallet' => EnsureHasWallet::class,
         ]);
 
         $middleware->web(append: [

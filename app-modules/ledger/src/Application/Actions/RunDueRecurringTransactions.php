@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Ledger\Application\Actions;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\DB;
 use Modules\Ledger\Infrastructure\Models\RecurringTransaction;
 use Modules\Ledger\Infrastructure\Models\Transaction;
 
@@ -17,9 +18,7 @@ use Modules\Ledger\Infrastructure\Models\Transaction;
  */
 class RunDueRecurringTransactions
 {
-    public function __construct(private readonly RecordTransaction $recordTransaction)
-    {
-    }
+    public function __construct(private readonly RecordTransaction $recordTransaction) {}
 
     public function handle(?CarbonImmutable $today = null): int
     {
@@ -45,7 +44,7 @@ class RunDueRecurringTransactions
         // I-5: dompet terarsip tidak menerima transaksi baru — recurring-nya
         // dilewati (setara jeda) sampai dompet diaktifkan lagi.
         $walletIds = array_filter([$recurring->wallet_id, $recurring->destination_wallet_id]);
-        $usableWallets = \Illuminate\Support\Facades\DB::table('wallets')
+        $usableWallets = DB::table('wallets')
             ->whereIn('id', $walletIds)
             ->whereNull('deleted_at')
             ->where('is_archived', false)

@@ -12,9 +12,7 @@ use Modules\Wallet\Application\Actions\AdjustWalletBalance;
 
 class UpdateTransaction
 {
-    public function __construct(private readonly AdjustWalletBalance $adjustWalletBalance)
-    {
-    }
+    public function __construct(private readonly AdjustWalletBalance $adjustWalletBalance) {}
 
     /**
      * AC-07.7: reverse efek lama, apply efek baru — saldo dompet lama dan baru

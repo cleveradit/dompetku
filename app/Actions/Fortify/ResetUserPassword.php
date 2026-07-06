@@ -14,9 +14,7 @@ class ResetUserPassword implements ResetsUserPasswords
 {
     use PasswordValidationRules;
 
-    public function __construct(private readonly ChangePassword $changePassword)
-    {
-    }
+    public function __construct(private readonly ChangePassword $changePassword) {}
 
     /**
      * Reset password via e-mail link; semua session lama ter-invalidate (AC-03.2).

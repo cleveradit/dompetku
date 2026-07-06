@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Wallet\Application\Queries;
 
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Wallet\Infrastructure\Models\Wallet;
 
 /**
@@ -37,7 +38,7 @@ class WalletOptionsQuery
             ->all();
     }
 
-    /** @return \Illuminate\Database\Eloquent\Builder<Wallet> */
+    /** @return Builder<Wallet> */
     private function query(int $userId)
     {
         return Wallet::withoutGlobalScopes()

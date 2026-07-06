@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
 use Modules\Identity\Infrastructure\Models\User;
+use Modules\Ledger\Infrastructure\Models\Category;
 use Modules\Wallet\Application\Actions\AdjustWalletBalance;
 use Modules\Wallet\Application\Actions\RecalculateWalletBalance;
 use Modules\Wallet\Infrastructure\Models\Wallet;
@@ -39,7 +40,7 @@ it('recalculates the cached balance from the transactions table', function () {
     $user = User::factory()->create();
     $wallet = Wallet::factory()->forUser($user)->withBalance('1000.00')->create();
     $other = Wallet::factory()->forUser($user)->withBalance('500.00')->create();
-    $category = \Modules\Ledger\Infrastructure\Models\Category::factory()->forUser($user)->create();
+    $category = Category::factory()->forUser($user)->create();
 
     $rows = [
         ['type' => 'income', 'wallet_id' => $wallet->id, 'destination_wallet_id' => null, 'category_id' => $category->id, 'amount' => '250.75'],

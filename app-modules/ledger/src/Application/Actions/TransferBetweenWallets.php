@@ -9,9 +9,7 @@ use Modules\Ledger\Infrastructure\Models\Transaction;
 
 class TransferBetweenWallets
 {
-    public function __construct(private readonly RecordTransaction $recordTransaction)
-    {
-    }
+    public function __construct(private readonly RecordTransaction $recordTransaction) {}
 
     /**
      * AC-08.1: satu record type=transfer; saldo asal berkurang, tujuan

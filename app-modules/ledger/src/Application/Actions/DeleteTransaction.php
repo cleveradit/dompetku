@@ -11,9 +11,7 @@ use Modules\Wallet\Application\Actions\AdjustWalletBalance;
 
 class DeleteTransaction
 {
-    public function __construct(private readonly AdjustWalletBalance $adjustWalletBalance)
-    {
-    }
+    public function __construct(private readonly AdjustWalletBalance $adjustWalletBalance) {}
 
     /**
      * AC-07.8 / AC-08.4: soft delete dan saldo kembali seperti sebelum

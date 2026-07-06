@@ -7,7 +7,9 @@ namespace Modules\Ledger;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Modules\Identity\Domain\Events\UserDeleting;
 use Modules\Identity\Domain\Events\UserRegistered;
+use Modules\Ledger\Application\Listeners\PurgeAttachmentsOnAccountDeletion;
 use Modules\Ledger\Application\Listeners\SeedDefaultCategoriesOnRegistration;
 use Modules\Ledger\Infrastructure\Models\Category;
 use Modules\Ledger\Infrastructure\Models\RecurringTransaction;
@@ -28,6 +30,7 @@ class LedgerServiceProvider extends ServiceProvider
         Gate::policy(RecurringTransaction::class, RecurringTransactionPolicy::class);
 
         Event::listen(UserRegistered::class, SeedDefaultCategoriesOnRegistration::class);
+        Event::listen(UserDeleting::class, PurgeAttachmentsOnAccountDeletion::class);
 
         if ($this->app->runningInConsole()) {
             $this->commands([RunRecurringCommand::class]);

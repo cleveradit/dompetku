@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Modules\Identity\Infrastructure\Models\User;
 use Modules\Ledger\Infrastructure\Models\Category;
 
@@ -104,7 +105,7 @@ it('throttles resending the verification e-mail to once per minute', function ()
 it('verifies the e-mail through the signed link', function () {
     $user = User::factory()->unverified()->create();
 
-    $url = \Illuminate\Support\Facades\URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), [
+    $url = URL::temporarySignedRoute('verification.verify', now()->addMinutes(60), [
         'id' => $user->id,
         'hash' => sha1((string) $user->email),
     ]);

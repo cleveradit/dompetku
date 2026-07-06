@@ -27,4 +27,5 @@ return [
     'transfer_saved' => 'Transfer tersimpan',
     'attachment_added' => 'Lampiran ditambahkan',
     'attachment_removed' => 'Lampiran dihapus',
+    'export_processing' => 'Export sedang diproses, link unduhan akan muncul di halaman ini.',
 ];

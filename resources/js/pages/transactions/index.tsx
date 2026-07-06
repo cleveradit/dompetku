@@ -1,8 +1,9 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { ChevronDown, Filter, Receipt, SearchIcon, X } from 'lucide-react';
+import { ChevronDown, Download, Filter, Receipt, SearchIcon, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import AmountText from '@/components/domain/amount-text';
+import AttachmentSection from '@/components/domain/attachment-section';
 import EmptyState from '@/components/domain/empty-state';
 import TransactionListItem from '@/components/domain/transaction-list-item';
 import { openEditTransaction } from '@/components/domain/transaction-sheet';
@@ -16,6 +17,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,6 +45,7 @@ interface PageProps {
     pagination: { current_page: number; last_page: number; total: number; next_page_url: string | null };
     filters: Filters;
     summary: { count: number; net_total: string } | null;
+    exportReady: { url: string; name: string } | null;
 }
 
 interface FormOptions {
@@ -50,7 +53,7 @@ interface FormOptions {
     categories: Category[];
 }
 
-export default function TransactionsIndex({ transactions, pagination, filters, summary }: PageProps) {
+export default function TransactionsIndex({ transactions, pagination, filters, summary, exportReady }: PageProps) {
     const { transactionForm } = usePage<SharedData & { transactionForm: FormOptions | null }>().props;
     const [items, setItems] = useState<Transaction[]>(transactions);
     const [search, setSearch] = useState(filters.q);
@@ -69,6 +72,15 @@ export default function TransactionsIndex({ transactions, pagination, filters, s
             });
         }
     }, [transactions, pagination.current_page]);
+
+    // Sinkronkan detail dengan data terbaru (mis. setelah lampiran diunggah/dihapus).
+    useEffect(() => {
+        setDetail((current) => {
+            if (!current) return current;
+            const fresh = transactions.find((t) => t.id === current.id);
+            return fresh ?? current;
+        });
+    }, [transactions]);
 
     const applyFilters = (next: Partial<Filters>) => {
         const merged = { ...filters, ...next };
@@ -142,6 +154,20 @@ export default function TransactionsIndex({ transactions, pagination, filters, s
     const clearAll = () =>
         applyFilters({ q: '', start: null, end: null, categories: [], wallet: null, type: null, min: null, max: null });
 
+    const exportTransactions = (format: 'csv' | 'xlsx') => {
+        window.location.href = route('exports.transactions', {
+            q: filters.q || undefined,
+            start: filters.start || undefined,
+            end: filters.end || undefined,
+            categories: filters.categories.length > 0 ? filters.categories : undefined,
+            wallet: filters.wallet ?? undefined,
+            type: filters.type ?? undefined,
+            min: filters.min || undefined,
+            max: filters.max || undefined,
+            format,
+        });
+    };
+
     const confirmDelete = () => {
         if (!deleting) return;
         router.delete(route('transactions.destroy', deleting.id), {
@@ -190,11 +216,38 @@ export default function TransactionsIndex({ transactions, pagination, filters, s
                 </div>
             )}
 
+            {/* Export siap diunduh */}
+            {exportReady && (
+                <div className="bg-secondary/60 mb-2 flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm">
+                    <span className="truncate">Export siap diunduh: {exportReady.name}</span>
+                    <Button asChild size="sm" variant="outline" className="shrink-0">
+                        <a href={exportReady.url}>
+                            <Download className="h-4 w-4" />
+                            Unduh
+                        </a>
+                    </Button>
+                </div>
+            )}
+
             {/* Ringkasan hasil filter (AC-17.3) */}
             {summary && (
                 <div className="bg-secondary/60 text-muted-foreground mb-2 flex items-center justify-between rounded-lg px-3 py-2 text-sm">
                     <span>{summary.count} transaksi</span>
-                    <AmountText amount={summary.net_total} variant="balance" className="text-sm" />
+                    <div className="flex items-center gap-3">
+                        <AmountText amount={summary.net_total} variant="balance" className="text-sm" />
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="outline">
+                                    <Download className="h-4 w-4" />
+                                    Export
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => exportTransactions('csv')}>Export CSV</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => exportTransactions('xlsx')}>Export Excel</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
             )}
 
@@ -280,6 +333,7 @@ export default function TransactionsIndex({ transactions, pagination, filters, s
                                     {detail.description && <DetailRow label="Catatan" value={detail.description} />}
                                     {detail.is_recurring && <DetailRow label="Sumber" value="Transaksi berulang" />}
                                 </dl>
+                                <AttachmentSection transaction={detail} />
                                 <div className="mt-2 grid grid-cols-2 gap-2">
                                     <Button
                                         variant="outline"
