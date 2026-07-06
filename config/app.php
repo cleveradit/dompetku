@@ -15,6 +15,10 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // 04-NFR.md S-2: register & lupa-password per menit per IP (default 3).
+    // Hanya boleh dilonggarkan untuk lingkungan E2E/CI.
+    'auth_writes_per_minute' => env('AUTH_WRITES_PER_MINUTE', 3),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

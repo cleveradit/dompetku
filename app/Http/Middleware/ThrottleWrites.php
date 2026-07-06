@@ -48,7 +48,8 @@ class ThrottleWrites
         $path = trim($request->path(), '/');
 
         if (in_array($path, self::AUTH_PATHS, true)) {
-            return ['auth-writes:'.$request->ip(), 3];
+            // Default 3/menit (04-NFR.md S-2); bisa dilonggarkan via env untuk E2E.
+            return ['auth-writes:'.$request->ip(), (int) config('app.auth_writes_per_minute', 3)];
         }
 
         $subject = $request->user()?->id !== null ? 'user:'.$request->user()->id : 'ip:'.$request->ip();

@@ -40,7 +40,8 @@ test('alur inti Dompetku dari registrasi sampai laporan', async ({ page }, testI
     if (isDesktop) {
         await page.getByRole('button', { name: 'Catat', exact: true }).click();
     } else {
-        await page.getByRole('button', { name: 'Catat transaksi' }).click();
+        // FAB (aria-label) — bukan tombol empty state yang bertuliskan sama.
+        await page.getByLabel('Catat transaksi').click();
     }
     await expect(page.getByRole('heading', { name: 'Catat transaksi' })).toBeVisible();
     await page.locator('#tx-amount').fill('25000');
@@ -53,7 +54,7 @@ test('alur inti Dompetku dari registrasi sampai laporan', async ({ page }, testI
 
     // 6. Laporan menampilkan pengeluaran
     await page.goto('/reports');
-    await expect(page.getByText('Keluar', { exact: true })).toBeVisible();
+    await expect(page.getByText('Keluar', { exact: true }).first()).toBeVisible();
     await expect(page.getByText('Rp25.000').first()).toBeVisible();
 
     // Tidak ada horizontal scroll (04-NFR.md U-1)
